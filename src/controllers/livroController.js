@@ -1,3 +1,4 @@
+import NaoEncontrado from "../erros/NaoEncontrado.js";
 import { autor } from "../models/Autor.js";
 import livro from "../models/Livro.js";
 
@@ -17,7 +18,10 @@ class LivroController {
     try {
       const id = req.params.id;
       const livroEncontrado = await livro.findById(id);
-      res.status(200).json(livroEncontrado);
+      if (livroEncontrado !== null ) {
+        res.status(200).json(livroEncontrado);
+      } else
+        res.status(404).json({ message: "Id do livro não localizado." });
 
     } catch (erro) {
       next(erro);
@@ -28,9 +32,13 @@ class LivroController {
     const novoLivro = req.body;
     try {
       const autorEncontrado = await autor.findById(novoLivro.autor);
-      const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc } };
-      const livroCriado = await livro.create(livroCompleto);
-      res.status(201).json({ message: "criado com sucesso", livro: livroCriado });
+      if (autorEncontrado !== null) {
+        const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc } };
+        const livroCriado = await livro.create(livroCompleto);
+        res.status(201).json({ message: "criado com sucesso", livro: livroCriado });
+      } else {
+        next(new NaoEncontrado("Id do autor não localizado."));
+      }
     } catch (erro) {
       next(erro);
     }

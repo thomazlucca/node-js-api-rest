@@ -1,3 +1,4 @@
+import NaoEncontrado from "../erros/NaoEncontrado.js";
 import { autor } from "../models/Autor.js";
 
 class AutorController {
@@ -19,7 +20,7 @@ class AutorController {
       if (autorEncontrado !== null) {
         res.status(200).json(autorEncontrado);
       } else {
-        res.status(404).json({ message: "Id do autor não localizado." });
+        next(new NaoEncontrado("Id do autor não localizado."));
       }
     } catch (erro) {
       next(erro);
@@ -29,7 +30,7 @@ class AutorController {
   static async cadastrarAutor(req, res, next) {
     try {
       const novoAutor = await autor.create(req.body);
-      res.status(201).json({ message: "criado com sucesso", livro: novoAutor });
+      res.status(201).json({ message: "criado com sucesso", autor: novoAutor });
     } catch (erro) {
       next(erro);
     }
