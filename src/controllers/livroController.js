@@ -1,6 +1,6 @@
 import NaoEncontrado from "../erros/NaoEncontrado.js";
 import { autor } from "../models/index.js";
-import {livro} from "../models/index.js";
+import { livro } from "../models/index.js";
 
 class LivroController {
 
@@ -18,7 +18,7 @@ class LivroController {
     try {
       const id = req.params.id;
       const livroEncontrado = await livro.findById(id);
-      if (livroEncontrado !== null ) {
+      if (livroEncontrado !== null) {
         res.status(200).json(livroEncontrado);
       } else
         res.status(404).json({ message: "Id do livro não localizado." });
@@ -65,15 +65,19 @@ class LivroController {
     }
   };
 
-  static async listarLivrosPorEditora(req, res, next) {
-    const editora = req.query.editora;
+  static async listarLivrosPorFiltro(req, res, next) {
+    const { editora, titulo } = req.query;
+    const busca = {};
+    if (editora) busca.editora = editora;
+    if (titulo) busca.titulo = titulo;
     try {
-      const livrosPorEditora = await livro.find({ editora: editora });
+      const livrosPorEditora = await livro.find(busca);
       res.status(200).json(livrosPorEditora);
     } catch (erro) {
       next(erro);
     }
   }
+
 };
 
 export default LivroController;
