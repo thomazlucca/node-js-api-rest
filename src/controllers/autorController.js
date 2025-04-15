@@ -3,11 +3,11 @@ import { autor } from "../models/index.js";
 
 class AutorController {
 
-  static async listarAutores(req, res) {
+  static async listarAutores(req, res, next) {
     try {
-      const listaAutores = await autor.find({});
-      res.status(200).json(listaAutores);
-
+      const autoresResultado = autor.find({});
+      req.resultado = autoresResultado;
+      next();
     } catch (erro) {
       res.status(500).json({ message: `${erro.message} - falha na requisição` });
     }
